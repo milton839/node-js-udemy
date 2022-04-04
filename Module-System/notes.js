@@ -1,73 +1,57 @@
 const fs = require('fs');
 const chalk = require('chalk');
 
-const getNotes = () => {
-    return "Your notes......";
-}
-const addnotes = (title, body) => {
+const addNotes = (title, body) =>{
     const notes = loadNotes();
-    // console.log(notes);
 
     const duplicateNotes = notes.filter(note => note.title === title);
-    // console.log(duplicateNotes.length);
 
     if (duplicateNotes.length === 0) {
         notes.push({
-        title: title,
-        body: body,
+            title:title,
+            body:body,
         })
-        savedNotes(notes)
-        console.log(chalk.bgGreen.black('New note added'));
-    }
-     else {
-        console.log(chalk.bgRed.black('Title already used'));  
-    }
-    
-}
-
-
-//remove Notes
-const removeNotes = (title) =>{
-    const allNotes = loadNotes();
-    // const singleData = allNotes.find(note =>note.title ===title);
-    // console.log(singleData);
-    // const removeData = allNotes.filter(note =>note.title !==singleData.title);//delete by filtering method and find method
-    const afterFilteringData = allNotes.filter(note =>note.title !==title);//delete by filtering method only
-    if (afterFilteringData.length < allNotes.length) {
-        savedNotes(afterFilteringData)//call and pass the all filtering data
-        console.log(chalk.bgGreen.black('Delete a note'));
+        saveNotes(notes)
+        console.log("Note added successfully");
     }
     else{
-        console.log(chalk.bgRed.black('This title not found'));
+        console.log("notes title already exists");
     }
-
-    // fs.writeFileSync('notes.json', JSON.stringify(removeData))
-
     
-    
-    // console.log(removeData);
 }
 
-//save all notes
-const savedNotes = (notes) =>{
-    const dataJSON = JSON.stringify(notes) 
-    fs.writeFileSync('notes.json', dataJSON);
+const saveNotes = (notes) =>{
+    const stringNotes = JSON.stringify(notes)
+    fs.writeFileSync("notes.json", stringNotes);
 }
 
-//load all notes
-const loadNotes = () => {
+const loadNotes = () =>{
     try{
-        const databuffer = fs.readFileSync('notes.json');
-        const stringData = databuffer.toString();
-        return JSON.parse(stringData)
+        const bufferNotes = fs.readFileSync('notes.json');
+        const stringNotes = bufferNotes.toString();
+        return JSON.parse(stringNotes);
     }
-    catch(e){
+    catch(err){
         return [];
     }
 }
 
-module.exports = {
-    getNotes,
-    addnotes,
+const removeNotes = (title) => {
+    const allNotes = loadNotes();
+    const newNotes = allNotes.filter(note => note.title !== title);
+
+    if (allNotes.length > newNotes.length) {
+        saveNotes(newNotes);
+        console.log(chalk.red('note removed successfully'));
+    }
+    else{
+        console.log(chalk.green('note not found'));
+    }
+    
+    
+}
+
+module.exports={
+    addNotes,
     removeNotes
-};
+}
