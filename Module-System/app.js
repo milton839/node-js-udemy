@@ -1,4 +1,4 @@
-const {addNotes, removeNotes} = require('./notes.js');
+const {addNotes, removeNotes, listNotes, readNote} = require('./notes.js');
 const chalk = require('chalk');
 const yargs = require('yargs');
 
@@ -25,7 +25,7 @@ yargs.command({
     },
 
     // here we can use use directly argv.title, argv.body or destructuring title, body
-    handler: function ({title, body}){
+    handler({title, body}){
         addNotes(title, body)
     }
 })
@@ -41,22 +41,40 @@ yargs.command({
             type: 'string',
         },
     },
-    handler: function (argv){
+    handler(argv){
         removeNotes(argv.title);
     }
 })
+
+
 yargs.command({
     command:'list',
     describe: 'list all note',
-    handler: function (){
-        console.log(chalk.red('listing note'));
+    builder: {
+        title: {
+            describe : 'Note title',
+            // demandOption: true,
+            type: 'string',
+        }
+    },
+    handler(){
+        listNotes()
     }
 })
+
+
 yargs.command({
     command:'read',
     describe: 'read a note',
-    handler: function (){
-        console.log(chalk.red('reading note'));
+    builder: {
+        title: {
+            describe : 'Note title',
+            demandOption: true,
+            type: 'string',
+        }
+    },
+    handler(argv){
+        readNote(argv.title)
     }
 })
 
